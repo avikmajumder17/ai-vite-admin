@@ -1,0 +1,60 @@
+:root {
+    --neon: #407FED;
+}
+
+
+
+.rfc-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+.rfc-goo-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    filter: url('#rfc-goo-blur');
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.rfc-goo-blob {
+    position: absolute;
+    width: 45px;
+    height: 45px;
+    background: var(--neon);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    margin: -22.5px 0 0 -22.5px;
+    animation: rfc-goo-dance 3.5s infinite ease-in-out;
+}
+
+.rfc-goo-blob:nth-child(1) { animation-delay: 0s; }
+.rfc-goo-blob:nth-child(2) { animation-delay: -0.8s; }
+.rfc-goo-blob:nth-child(3) { animation-delay: -1.6s; }
+.rfc-goo-blob:nth-child(4) {
+    animation-delay: -2.4s;
+    width: 55px;
+    height: 55px;
+    margin: -27.5px 0 0 -27.5px;
+    box-shadow: 0 0 20px rgba(225, 255, 0, 0.4);
+}
+
+@keyframes rfc-goo-dance {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(40px, -40px) scale(0.8); }
+    50% { transform: translate(-40px, 40px) scale(1.1); }
+    75% { transform: translate(40px, 40px) scale(0.9); }
+}
