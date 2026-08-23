@@ -15,7 +15,7 @@ export default function Sidebar() {
             
         <Link to="/homepage">About Us</Link>          
         
-        <Link to="/homepage">Blogs</Link>  
+        <Link to="/blogs">Blogs</Link>  
       </nav>
     </aside>
   );

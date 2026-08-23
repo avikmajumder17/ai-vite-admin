@@ -84,23 +84,7 @@ export default function Homepage() {
         ctaButton: ""
       }
     ]
-  });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();    
-
-    try {
-      setIsLoading(true);
-
-      const response = await api.patch("/homepage", formData);
-
-      console.log(response, "hi");
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  });  
 
   useLayoutEffect(() => {
     const fetchHomePage = async () => {
@@ -221,6 +205,20 @@ export default function Homepage() {
         : pricingPlan
       )
     }))
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();    
+
+    try {
+      setIsLoading(true);
+
+      await api.patch("/homepage", formData);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
 
