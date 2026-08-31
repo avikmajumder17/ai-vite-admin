@@ -12,7 +12,8 @@ export const EditBlog = () => {
         image: "",
         blogCategory: "",
         blogTitle: "",
-        blogDescription: ""
+        blogDescription: "",
+        blogKeyTakeways: [""]
     });
 
     const { id } = useParams();
@@ -159,38 +160,37 @@ export const EditBlog = () => {
                     </div>
 
                     {/* Key Takeaways */}
-                    {/* <div className="mb-4">
+                    <div className="mb-4">
+                        <div className="d-flex justify-content-between align-items-center mb-3">
+                            <label className="form-label mb-0">
+                                Key Takeaways
+                            </label>
 
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                        <label className="form-label mb-0">
-                            Key Takeaways
-                        </label>
+                            <button
+                                type="button"
+                                className="btn btn-primary btn-sm"
+                            >
+                                + Add Takeaway
+                            </button>
+                        </div>
 
-                        <button
-                            type="button"
-                            className="btn btn-primary btn-sm"
-                        >
-                            + Add Takeaway
-                        </button>
+                        <div className="input-group mb-2">
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="keyTakeaways"
+                                placeholder="AI automates repetitive tasks."
+                            />
+
+                            <button
+                                type="button"
+                                className="btn btn-outline-danger"
+                            >
+                                Remove
+                            </button>
+                        </div>
+
                     </div>
-
-                    <div className="input-group mb-2">
-                        <input
-                            type="text"
-                            className="form-control"
-                            name="keyTakeaways"
-                            placeholder="AI automates repetitive tasks."
-                        />
-
-                        <button
-                            type="button"
-                            className="btn btn-outline-danger"
-                        >
-                            Remove
-                        </button>
-                    </div>
-
-                </div> */}
 
                     {/* Blog Content */}
                     <div className="mb-4">

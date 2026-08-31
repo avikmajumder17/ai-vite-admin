@@ -9,7 +9,8 @@ export default function CreateABlog() {
         image: "",
         blogCategory: "",
         blogTitle: "",
-        blogDescription: ""
+        blogDescription: "",
+        blogKeyTakeways: [""]
     });
 
     const handleChange = (e) => {
@@ -34,6 +35,26 @@ export default function CreateABlog() {
             console.log("Blog submission successful!");
         }
     };    
+
+    const handleAddTakeaway = () => {
+        setBlogData(prev => ({
+            ...prev,
+            blogKeyTakeways: [...prev.blogKeyTakeways, ""]
+        }))
+    };
+
+    const handleRemoveTakeways = (takeawayIndex) => {
+        setBlogData(prev => ({
+            ...prev,
+            blogKeyTakeways: prev.blogKeyTakeways.filter(
+                (_, index) => takeawayIndex !== index
+            )
+        }));
+    };
+
+
+
+    console.log(blogData);
 
 
 
@@ -102,33 +123,10 @@ export default function CreateABlog() {
                             placeholder="Admin"
                         />
                     </div> */}
-
-                    {/* Published Date */}
-                    {/* <div className="col-md-4 mb-3">
-                        <label className="form-label">Published Date</label>
-                        <input
-                            type="date"
-                            className="form-control"
-                            onChange={handleChange}
-                            name="publishedDate"
-                        />
-                    </div> */}
-
-                    {/* Read Time */}
-                    {/* <div className="col-md-4 mb-3">
-                        <label className="form-label">Read Time</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            name="readTime"
-                            onChange={handleChange}
-                            placeholder="8 min read"
-                        />
-                    </div> */}
                 </div>
 
                 {/* Key Takeaways */}
-                {/* <div className="mb-4">
+                <div className="mb-4">
 
                     <div className="d-flex justify-content-between align-items-center mb-3">
                         <label className="form-label mb-0">
@@ -138,28 +136,33 @@ export default function CreateABlog() {
                         <button
                             type="button"
                             className="btn btn-primary btn-sm"
+                            onClick={handleAddTakeaway}
                         >
                             + Add Takeaway
                         </button>
                     </div>
 
-                    <div className="input-group mb-2">
-                        <input
-                            type="text"
-                            className="form-control"
-                            name="keyTakeaways"
-                            placeholder="AI automates repetitive tasks."
-                        />
+                    {blogData?.blogKeyTakeways?.map((_, index) => (
+                        <div className="input-group mb-2" key={index}>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="keyTakeaways"
+                                placeholder="AI automates repetitive tasks."
+                            />
 
-                        <button
-                            type="button"
-                            className="btn btn-outline-danger"
-                        >
-                            Remove
-                        </button>
-                    </div>
-
-                </div> */}
+                            {blogData?.blogKeyTakeways?.length > 1 && (
+                                <button
+                                    type="button"
+                                    onClick={() => handleRemoveTakeways(index)}
+                                    className="btn btn-outline-danger"
+                                >
+                                    Remove
+                                </button>
+                            )}                            
+                        </div>
+                    ))}
+                </div>
 
                 {/* Blog Content */}
                 <div className="mb-4">

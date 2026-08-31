@@ -13,7 +13,7 @@ export default function Sidebar() {
       <nav>
         <Link to="/">Homepage</Link>          
             
-        <Link to="/homepage">About Us</Link>          
+        <Link to="/about-us">About Us</Link>          
         
         <Link to="/blogs">Blogs</Link>  
       </nav>
