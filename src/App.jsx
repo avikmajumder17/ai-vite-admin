@@ -1,3 +1,5 @@
+import { useLocation } from 'react-router-dom';
+
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import { AllRoutes } from './routes/AllRoutes';
@@ -7,15 +9,20 @@ import './App.css';
 
 
 function App() {
+  const pathName = useLocation().pathname;
+
+  const navNotIncluded = pathName.includes("/login");
+
+  
 
   return (
     <div className="app">
-      <Sidebar />
+      {!navNotIncluded && <Sidebar />}
 
       <div className="main">
-        <Navbar />
+        {!navNotIncluded && <Navbar />}
 
-        <div className="content">
+        <div className={`content ${navNotIncluded ? "p-0" : ""}`}>
           <AllRoutes />
         </div>
       </div>

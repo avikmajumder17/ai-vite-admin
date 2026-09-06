@@ -15,7 +15,9 @@ export default function Sidebar() {
             
         <Link to="/about-us">About Us</Link>          
         
-        <Link to="/blogs">Blogs</Link>  
+        <Link to="/blogs">Blogs</Link> 
+
+        <Link to="/blog-categories">Blog Categories</Link>  
       </nav>
     </aside>
   );
