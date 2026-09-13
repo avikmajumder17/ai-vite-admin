@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import api from "../api/axios";
+import { Loader } from "../components/Loader";
 
 
 
@@ -12,29 +14,28 @@ export default function CreateABlog() {
         blogDescription: "",
         blogKeyTakeways: [""]
     });
+    const [blogCategories, setBlogCategories] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
+    const navigate = useNavigate();
 
-        setBlogData({
-            ...blogData,
-            [name]: value,
-        })
-    };
+    useEffect(() => {
+        const fetchBlogCategories = async () => {
+            try {
+                setIsLoading(true);
 
-    const submitBlogData = async (e) => {
-        e.preventDefault();
+                const response = await api.get("/blog_category");
 
-        try {
-            const response = await api.post("/blogs", blogData);
+                setBlogCategories(response?.data?.data?.blogCategory);
+            } catch (err) {
+                console.log(err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
-            console.log(response.data.data);            
-        } catch (err) {
-            console.log(err);
-        } finally {
-            console.log("Blog submission successful!");
-        }
-    };    
+        fetchBlogCategories();
+    }, []);
 
     const handleAddTakeaway = () => {
         setBlogData(prev => ({
@@ -52,43 +53,90 @@ export default function CreateABlog() {
         }));
     };
 
+    const handleChange = (e, arrayName = null, index) => {
+        const { name, value } = e.target;
 
+        if (arrayName !== null) {
+            setBlogData((prev) => ({
+                ...prev,
+                [arrayName]: prev.blogKeyTakeways.map((item, i) => 
+                    (i === index) ? value : item
+                )
+            }));
+        } else {
+            setBlogData((prev) => ({
+                ...prev,
+                [name]: value,
+            }))
+        }
+    };
+
+    const submitBlogData = async (e) => {
+        e.preventDefault();
+
+        try {
+            setIsLoading(true);
+
+            await api.post("/blogs", blogData);
+        } catch (err) {
+            console.log(err);
+        } finally {
+            setIsLoading(false);
+
+            navigate(-1);
+        }
+    };
 
     console.log(blogData);
 
 
 
     return (
-        <div className="container py-4">
-            <form onSubmit={submitBlogData}>
-                <h3 className="mb-4">Create Blog</h3>
+        <>
+            {isLoading && <Loader />}
 
-                {/* Category */}
-                <div className="mb-3">
-                    <label className="form-label">Category</label>
-                    <input
+            <div className="container py-4">
+                <form onSubmit={submitBlogData}>
+                    <h3 className="mb-4">Create Blog</h3>
+
+                    {/* Category */}
+                    <div className="mb-3">
+                        <label className="form-label">Category</label>
+                        {/* <input
                         type="text"
                         className="form-control"
                         name="blogCategory"
                         onChange={handleChange}
                         placeholder="Artificial Intelligence"
-                    />
-                </div>
+                    /> */}
 
-                {/* Title */}
-                <div className="mb-3">
-                    <label className="form-label">Blog Title</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        name="blogTitle"
-                        onChange={handleChange}
-                        placeholder="How AI is Changing the Future"
-                    />
-                </div>
+                        <select className="form-select" name="blogCategory" onChange={handleChange}>
+                            <option>Choose a category</option>
+                            {blogCategories?.map((blogCategory) => (
+                                <option
+                                    value={blogCategory?.category}
+                                    key={blogCategory?._id}
+                                >
+                                    {blogCategory?.category}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
-                {/* Slug */}
-                {/* <div className="mb-3">
+                    {/* Title */}
+                    <div className="mb-3">
+                        <label className="form-label">Blog Title</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            name="blogTitle"
+                            onChange={handleChange}
+                            placeholder="How AI is Changing the Future"
+                        />
+                    </div>
+
+                    {/* Slug */}
+                    {/* <div className="mb-3">
                     <label className="form-label">Slug</label>
                     <input
                         type="text"
@@ -99,8 +147,8 @@ export default function CreateABlog() {
                     />
                 </div> */}
 
-                {/* Featured Image */}
-                {/* <div className="mb-3">
+                    {/* Featured Image */}
+                    {/* <div className="mb-3">
                     <label className="form-label">Featured Image</label>
                     <input
                         type="file"
@@ -110,10 +158,10 @@ export default function CreateABlog() {
                     />
                 </div> */}
 
-                <div className="row">
+                    <div className="row">
 
-                    {/* Author */}
-                    {/* <div className="col-md-4 mb-3">
+                        {/* Author */}
+                        {/* <div className="col-md-4 mb-3">
                         <label className="form-label">Author</label>
                         <input
                             type="text"
@@ -123,62 +171,63 @@ export default function CreateABlog() {
                             placeholder="Admin"
                         />
                     </div> */}
-                </div>
-
-                {/* Key Takeaways */}
-                <div className="mb-4">
-
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                        <label className="form-label mb-0">
-                            Key Takeaways
-                        </label>
-
-                        <button
-                            type="button"
-                            className="btn btn-primary btn-sm"
-                            onClick={handleAddTakeaway}
-                        >
-                            + Add Takeaway
-                        </button>
                     </div>
 
-                    {blogData?.blogKeyTakeways?.map((_, index) => (
-                        <div className="input-group mb-2" key={index}>
-                            <input
-                                type="text"
-                                className="form-control"
-                                name="keyTakeaways"
-                                placeholder="AI automates repetitive tasks."
-                            />
+                    {/* Key Takeaways */}
+                    <div className="mb-4">
 
-                            {blogData?.blogKeyTakeways?.length > 1 && (
-                                <button
-                                    type="button"
-                                    onClick={() => handleRemoveTakeways(index)}
-                                    className="btn btn-outline-danger"
-                                >
-                                    Remove
-                                </button>
-                            )}                            
+                        <div className="d-flex justify-content-between align-items-center mb-3">
+                            <label className="form-label mb-0">
+                                Key Takeaways
+                            </label>
+
+                            <button
+                                type="button"
+                                className="btn btn-primary btn-sm"
+                                onClick={handleAddTakeaway}
+                            >
+                                + Add Takeaway
+                            </button>
                         </div>
-                    ))}
-                </div>
 
-                {/* Blog Content */}
-                <div className="mb-4">
-                    <label className="form-label">Blog Content</label>
+                        {blogData?.blogKeyTakeways?.map((_, index) => (
+                            <div className="input-group mb-2" key={index}>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="blogKeyTakeways"
+                                    onChange={(e) => handleChange(e, "blogKeyTakeways", index)}
+                                    placeholder="AI automates repetitive tasks."
+                                />
 
-                    <textarea
-                        className="form-control"
-                        rows="12"
-                        name="blogDescription"
-                        onChange={handleChange}
-                        placeholder="Write your complete blog content here..."
-                    />
-                </div>
+                                {blogData?.blogKeyTakeways?.length > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveTakeways(index)}
+                                        className="btn btn-outline-danger"
+                                    >
+                                        Remove
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
 
-                {/* Status */}
-                {/* <div className="mb-4">
+                    {/* Blog Content */}
+                    <div className="mb-4">
+                        <label className="form-label">Blog Content</label>
+
+                        <textarea
+                            className="form-control"
+                            rows="12"
+                            name="blogDescription"
+                            onChange={handleChange}
+                            placeholder="Write your complete blog content here..."
+                        />
+                    </div>
+
+                    {/* Status */}
+                    {/* <div className="mb-4">
                     <label className="form-label">Status</label>
 
                     <select
@@ -190,14 +239,15 @@ export default function CreateABlog() {
                     </select>
                 </div> */}
 
-                <button
-                    type="submit"
-                    className="btn btn-success"
-                >
-                    Submit
-                </button>
+                    <button
+                        type="submit"
+                        className="btn btn-success"
+                    >
+                        Submit
+                    </button>
 
-            </form>
-        </div>
+                </form>
+            </div>
+        </>
     )
 }

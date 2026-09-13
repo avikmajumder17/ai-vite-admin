@@ -8,6 +8,7 @@ import { Loader } from "../components/Loader";
 
 export const EditBlog = () => {
     const [isLoading, setIsLoading] = useState(false);
+    const [blogCategories, setBlogCategories] = useState([]);
     const [blog, setBlog] = useState({
         image: "",
         blogCategory: "",
@@ -18,31 +19,66 @@ export const EditBlog = () => {
 
     const { id } = useParams();
 
+    useEffect(() => {
+        const fetchBlogCategories = async () => {
+            try {
+                setIsLoading(true);
+
+                const response = await api.get("/blog_category");
+
+                setBlogCategories(response?.data?.data?.blogCategory);
+            } catch (err) {
+                console.log(err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchBlogCategories();
+    }, []);
 
     useEffect(() => {
         const fetchBlog = async () => {
             try {
+                setIsLoading(true);
+
                 const response = await api.get(`/blogs/${id}`);
 
                 setBlog(response?.data?.data?.blog);
             } catch (err) {
                 console.log(err);
             } finally {
-                console.log("Blog fetched successfully");
+                setIsLoading(false);
             }
         };
 
         fetchBlog();
     }, []);
 
-    const handleChange = (e) => {
+    const handleAddTakeaway = () => {
+        setBlog(prev => ({
+            ...prev,
+            blogKeyTakeways: [...prev.blogKeyTakeways, ""]
+        }))
+    };
+
+    const handleChange = (e, arrayName = null, index) => {
         const { name, value } = e.target;
 
-        setBlog({
-            ...blog,
-            [name]: value
-        })
-    }
+        if (arrayName !== null) {
+            setBlog((prev) => ({
+                ...prev,
+                blogKeyTakeways: prev.blogKeyTakeways.map((blogKeyTakeway, i) => (
+                    (i === index) ? value : blogKeyTakeway
+                ))
+            }));
+        } else {
+            setBlog({
+                ...blog,
+                [name]: value
+            })
+        }        
+    }    
 
     const handleEdit = async (e) => {
         e.preventDefault();
@@ -60,8 +96,6 @@ export const EditBlog = () => {
         }
     };
 
-    console.log(blog, "hi");
-
 
 
     return (
@@ -75,14 +109,17 @@ export const EditBlog = () => {
                     {/* Category */}
                     <div className="mb-3">
                         <label className="form-label">Category</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            name="blogCategory"
-                            value={blog?.blogCategory}
-                            onChange={handleChange}
-                            placeholder="Artificial Intelligence"
-                        />
+
+                        <select onChange={handleChange} className="form-select" name="blogCategory" id="">
+                            <option value={blog?.blogCategory}>{blog?.blogCategory}</option>
+
+                            {blogCategories
+                                .filter((blogCategory) => blogCategory?.category?.toLowerCase() !== blog?.blogCategory?.toLocaleLowerCase())
+                                .map((blogCategory) => (
+                                    <option key={blogCategory?._id} value={blogCategory?.category}>{blogCategory?.category}</option>
+                                ))
+                            }
+                        </select>
                     </div>
 
                     {/* Title */}
@@ -169,27 +206,31 @@ export const EditBlog = () => {
                             <button
                                 type="button"
                                 className="btn btn-primary btn-sm"
+                                onClick={handleAddTakeaway}
                             >
                                 + Add Takeaway
                             </button>
                         </div>
 
-                        <div className="input-group mb-2">
-                            <input
-                                type="text"
-                                className="form-control"
-                                name="keyTakeaways"
-                                placeholder="AI automates repetitive tasks."
-                            />
+                        {blog?.blogKeyTakeways.map((blogKeyTakeway, index) => (
+                            <div className="input-group mb-2" key={index}>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="keyTakeaways"
+                                    value={blogKeyTakeway}
+                                    onChange={(e) => handleChange(e, "blogKeyTakeways", index)}
+                                    placeholder="AI automates repetitive tasks."
+                                />
 
-                            <button
-                                type="button"
-                                className="btn btn-outline-danger"
-                            >
-                                Remove
-                            </button>
-                        </div>
-
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-danger"
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                        ))}
                     </div>
 
                     {/* Blog Content */}

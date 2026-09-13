@@ -79,7 +79,7 @@ export const BlogCategories = () => {
                                             <td>{index + 1}</td>
                                             <td>{blogCategory?.category}</td>
                                             <td>
-                                                <Link to={`/blog-categories/`}>
+                                                <Link to={`/blog-categories/${blogCategory?._id}`}>
                                                     <button className="btn btn-sm btn-warning me-2">
                                                         Edit
                                                     </button>
