@@ -8,6 +8,7 @@ import { Loader } from "../components/Loader";
 
 export const BlogCategories = () => {
     const [blogCategories, setBlogCategories] = useState([]);
+    const [blogCategoryDeleteAlert, setBlogCategoryDeleteAlert] = useState(null);
     const [isLoading, setIsLoading] = useState(false);    
 
     const deleteCategoryHandler = async (id) => {
@@ -85,7 +86,12 @@ export const BlogCategories = () => {
                                                     </button>
                                                 </Link>
 
-                                                <button onClick={() => deleteCategoryHandler(blogCategory?._id)} className="btn btn-sm btn-danger">
+                                                <button
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#exampleModal" 
+                                                    onClick={() => setBlogCategoryDeleteAlert(blogCategory?._id)}
+                                                    className="btn btn-sm btn-danger"
+                                                >
                                                     Delete
                                                 </button>
                                             </td>
@@ -93,6 +99,35 @@ export const BlogCategories = () => {
                                     ))}
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header border-bottom-0">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel"></h1>
+                            
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body text-center">
+                            {blogCategories
+                                .filter((blogCategory) => blogCategory?._id === blogCategoryDeleteAlert)
+                                .map((blogCategory) => (
+                                    <h5 className="mb-0">
+                                        Do you want to delete the blog category? - <br /> <em><b>"{blogCategory?.category}"</b></em>
+                                    </h5>
+                                ))
+                            }
+                        </div>
+
+                        <div class="modal-footer justify-content-between">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            
+                            <button onClick={() => deleteCategoryHandler(blogCategoryDeleteAlert)} type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">Delete</button>
                         </div>
                     </div>
                 </div>

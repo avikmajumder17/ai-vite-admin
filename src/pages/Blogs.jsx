@@ -55,11 +55,15 @@ export default function Blogs() {
                 <div className="d-flex justify-content-between align-items-center mb-4">
                     <h3 className="mb-0">All Blogs</h3>
 
-                    <Link to="/create-blog">
-                        <button className="btn btn-primary">
-                            + Create Blog
-                        </button>
-                    </Link>
+                    <div className="d-flex align-items-center gap-3">
+                        <button className="btn btn-success">Upload From CSV</button>
+
+                        <Link to="/create-blog">
+                            <button className="btn btn-primary">
+                                + Create Blog
+                            </button>
+                        </Link>
+                    </div>
                 </div>
 
                 <div className="card shadow-sm">

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import api from "../api/axios";
 import { Loader } from "../components/Loader";
@@ -18,6 +18,8 @@ export const EditBlog = () => {
     });
 
     const { id } = useParams();
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchBlogCategories = async () => {
@@ -86,9 +88,9 @@ export const EditBlog = () => {
         try {
             setIsLoading(true);
 
-            const response = await api.patch(`/blogs/${id}`, blog);
-
-            console.log(response);
+            await api.patch(`/blogs/${id}`, blog);    
+            
+            navigate(-1);
         } catch (err) {
             console.log(err);
         } finally {

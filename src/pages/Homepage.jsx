@@ -230,12 +230,7 @@ export default function Homepage() {
       <div className="page">
         <div className="cards">
           <DashboardCard
-            title="Homepage Sections"
-            value="8"
-          />
-
-          <DashboardCard
-            title="Testimonials"
+            title="About Us"
             value="12"
           />
 
@@ -245,10 +240,14 @@ export default function Homepage() {
           />
 
           <DashboardCard
-            title="FAQs"
+            title="Blogs"
             value="10"
           />
 
+          <DashboardCard
+            title="Blog Categories"
+            value="3"
+          />
         </div>
 
         <h2 style={{ marginTop: 40 }}>
