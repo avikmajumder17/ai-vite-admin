@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import slugify from "slugify";
 
 import api from "../api/axios";
 import { Loader } from "../components/Loader";
@@ -7,10 +8,11 @@ import { Loader } from "../components/Loader";
 
 
 export default function CreateABlog() {
-    const [blogData, setBlogData] = useState({
-        image: "",
+    const [blogData, setBlogData] = useState({        
         blogCategory: "",
         blogTitle: "",
+        blogSlug: "",
+        image: null,
         blogDescription: "",
         blogKeyTakeways: [""]
     });
@@ -67,7 +69,16 @@ export default function CreateABlog() {
             setBlogData((prev) => ({
                 ...prev,
                 [name]: value,
-            }))
+            }));
+
+            if (name === "blogTitle") {
+                setBlogData(prev => ({
+                    ...prev,
+                    blogSlug: slugify(value, {
+                        lower: true
+                    })
+                }))
+            }
         }
     };
 
@@ -77,7 +88,18 @@ export default function CreateABlog() {
         try {
             setIsLoading(true);
 
-            await api.post("/blogs", blogData);
+            const formData = new FormData();
+
+            formData.append("blogCategory", blogData.blogCategory);
+            formData.append("blogTitle", blogData.blogTitle);
+            formData.append("blogSlug", blogData.blogSlug);
+            formData.append("blogDescription", blogData.blogDescription);
+
+            formData.append("blogKeyTakeways", JSON.stringify(blogData.blogKeyTakeways));
+
+            formData.append("image", blogData.image);
+
+            await api.post("/blogs", formData);
         } catch (err) {
             console.log(err);
         } finally {
@@ -86,8 +108,6 @@ export default function CreateABlog() {
             navigate(-1);
         }
     };
-
-    console.log(blogData);
 
 
 
@@ -136,27 +156,31 @@ export default function CreateABlog() {
                     </div>
 
                     {/* Slug */}
-                    {/* <div className="mb-3">
-                    <label className="form-label">Slug</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        name="slug"
-                        onChange={handleChange}
-                        placeholder="how-ai-is-changing-the-future"
-                    />
-                </div> */}
+                    <div className="mb-3">
+                        <label className="form-label">Slug</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            name="blogSlug"
+                            value={blogData?.blogSlug}
+                            onChange={handleChange}
+                            placeholder="how-ai-is-changing-the-future"
+                        />
+                    </div>
 
-                    {/* Featured Image */}
-                    {/* <div className="mb-3">
-                    <label className="form-label">Featured Image</label>
-                    <input
-                        type="file"
-                        className="form-control"
-                        onChange={handleChange}
-                        name="image"
-                    />
-                </div> */}
+                        {/* Featured Image */}
+                    <div className="mb-3">
+                        <label className="form-label">Featured Image</label>
+                        <input
+                            type="file"
+                            className="form-control"
+                            onChange={(e) => setBlogData(prev => ({
+                                ...prev,
+                                image: e.target.files[0]
+                            }))}
+                            name="image"
+                        />
+                    </div>
 
                     <div className="row">
 

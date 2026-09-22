@@ -10,6 +10,7 @@ import { Loader } from "../components/Loader";
 
 export default function Blogs() {
     const [blogs, setBlogs] = useState([]);
+    const [imageBaseUrl, setImageBaseUrl] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [blogDeleteAlert, setBlogDeleteAlert] = useState(null);
 
@@ -21,6 +22,7 @@ export default function Blogs() {
                 const response = await api.get("/blogs");
 
                 setBlogs(response?.data?.data?.blogs);
+                setImageBaseUrl(response?.data?.imageBaseUrl);
             } catch (err) {
                 console.log(err);
             } finally {
@@ -91,23 +93,19 @@ export default function Blogs() {
                                             <td>{index + 1}</td>
 
                                             <td>
-                                                {/* <img
-                                                src={blog?.image}
-                                                alt={blog?.blogTitle}
-                                                width="80"
-                                                height="50"
-                                                className="rounded object-fit-cover"
-                                            /> */}
+                                                <img
+                                                    src={`${imageBaseUrl}/${blog?.image}`}
+                                                    alt={blog?.blogTitle}
+                                                    width="80"
+                                                    height="50"
+                                                    className="rounded object-fit-cover"
+                                                />
                                             </td>
 
                                             <td>
                                                 <div className="fw-semibold">
                                                     {blog?.blogTitle}
                                                 </div>
-
-                                                <small className="text-muted">
-                                                    8 min read
-                                                </small>
                                             </td>
 
                                             <td>

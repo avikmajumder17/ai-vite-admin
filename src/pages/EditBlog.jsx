@@ -9,13 +9,16 @@ import { Loader } from "../components/Loader";
 export const EditBlog = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [blogCategories, setBlogCategories] = useState([]);
-    const [blog, setBlog] = useState({
-        image: "",
+    const [imageBaseUrl, setImageBaseUrl] = useState("");
+    const [blog, setBlog] = useState({        
         blogCategory: "",
         blogTitle: "",
+        blogSlug: "",
+        image: null,
         blogDescription: "",
         blogKeyTakeways: [""]
     });
+    const [updateNewImage, setUpdateNewImage] = useState(null);
 
     const { id } = useParams();
 
@@ -47,6 +50,7 @@ export const EditBlog = () => {
                 const response = await api.get(`/blogs/${id}`);
 
                 setBlog(response?.data?.data?.blog);
+                setImageBaseUrl(response?.data?.imageBaseUrl);
             } catch (err) {
                 console.log(err);
             } finally {
@@ -80,7 +84,7 @@ export const EditBlog = () => {
                 [name]: value
             })
         }        
-    }    
+    }
 
     const handleEdit = async (e) => {
         e.preventDefault();
@@ -88,7 +92,20 @@ export const EditBlog = () => {
         try {
             setIsLoading(true);
 
-            await api.patch(`/blogs/${id}`, blog);    
+            const formData = new FormData();
+
+            formData.append("blogCategory", blog.blogCategory);
+            formData.append("blogTitle", blog.blogTitle);
+            formData.append("blogSlug", blog.blogSlug);
+            formData.append("blogDescription", blog.blogDescription);
+
+            formData.append("blogKeyTakeways", JSON.stringify(blog.blogKeyTakeways));
+
+            formData.append("image", updateNewImage);
+
+            await api.patch(`/blogs/${id}`, formData);
+
+            console.log(formData, "hi")
             
             navigate(-1);
         } catch (err) {
@@ -97,6 +114,8 @@ export const EditBlog = () => {
             setIsLoading(false);
         }
     };
+
+    console.log(blog);
 
 
 
@@ -138,64 +157,34 @@ export const EditBlog = () => {
                     </div>
 
                     {/* Slug */}
-                    {/* <div className="mb-3">
-                    <label className="form-label">Slug</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        name="slug"
-                        onChange={handleChange}
-                        placeholder="how-ai-is-changing-the-future"
-                    />
-                </div> */}
+                    <div className="mb-3">
+                        <label className="form-label">Slug</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            name="slug"
+                            value={blog?.blogSlug}
+                            onChange={handleChange}
+                            placeholder="how-ai-is-changing-the-future"
+                        />
+                    </div>
 
                     {/* Featured Image */}
-                    {/* <div className="mb-3">
-                    <label className="form-label">Featured Image</label>
-                    <input
-                        type="file"
-                        className="form-control"
-                        onChange={handleChange}
-                        name="image"
-                    />
-                </div> */}
-
-                    <div className="row">
-
-                        {/* Author */}
-                        {/* <div className="col-md-4 mb-3">
-                        <label className="form-label">Author</label>
+                    <div className="mb-3">
+                        <label className="form-label">Featured Image</label>
                         <input
-                            type="text"
+                            type="file"
                             className="form-control"
-                            name="author"
-                            onChange={handleChange}
-                            placeholder="Admin"
+                            onChange={(e) => setUpdateNewImage(e.target.files[0])}
+                            name="image"
                         />
-                    </div> */}
 
-                        {/* Published Date */}
-                        {/* <div className="col-md-4 mb-3">
-                        <label className="form-label">Published Date</label>
-                        <input
-                            type="date"
-                            className="form-control"
-                            onChange={handleChange}
-                            name="publishedDate"
+                        <img
+                            src={`${imageBaseUrl}/${blog?.image}`}
+                            alt=""
+                            width="150"
+                            className="rounded mt-3"
                         />
-                    </div> */}
-
-                        {/* Read Time */}
-                        {/* <div className="col-md-4 mb-3">
-                        <label className="form-label">Read Time</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            name="readTime"
-                            onChange={handleChange}
-                            placeholder="8 min read"
-                        />
-                    </div> */}
                     </div>
 
                     {/* Key Takeaways */}
