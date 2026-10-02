@@ -1,65 +1,51 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLoaderData, useNavigate, useParams } from "react-router-dom";
 
 import api from "../api/axios";
-import { Loader } from "../components/Loader";
+import { PageLoader } from "../components/PageLoader";
 
 
 
-export const EditBlog = () => {
+export async function loader({ params }) {
+    try {
+        const response = await api.get(`/blogs/${params.id}`);
+        const responseCategory = await api.get("/blog_category");
+
+        const blog = response?.data?.data?.blog;
+        const blogCategories = responseCategory?.data?.data?.blogCategory;
+        const imageBaseUrl = response?.data?.imageBaseUrl;
+
+        return {
+            blogData: blog,
+            blogCategories,
+            imageBaseUrl
+        }
+    } catch (err) {
+        console.log(err);
+
+        throw new Response("Failed to load edit blog", { status: 500 });
+    }
+};
+
+
+const EditBlog = () => {
+    const { blogData, blogCategories, imageBaseUrl } = useLoaderData();
+
     const [isLoading, setIsLoading] = useState(false);
-    const [blogCategories, setBlogCategories] = useState([]);
-    const [imageBaseUrl, setImageBaseUrl] = useState("");
     const [blog, setBlog] = useState({        
         blogCategory: "",
         blogTitle: "",
         blogSlug: "",
         image: null,
         blogDescription: "",
-        blogKeyTakeways: [""]
+        blogKeyTakeways: [""],
+        ...blogData
     });
     const [updateNewImage, setUpdateNewImage] = useState(null);
 
     const { id } = useParams();
 
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const fetchBlogCategories = async () => {
-            try {
-                setIsLoading(true);
-
-                const response = await api.get("/blog_category");
-
-                setBlogCategories(response?.data?.data?.blogCategory);
-            } catch (err) {
-                console.log(err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchBlogCategories();
-    }, []);
-
-    useEffect(() => {
-        const fetchBlog = async () => {
-            try {
-                setIsLoading(true);
-
-                const response = await api.get(`/blogs/${id}`);
-
-                setBlog(response?.data?.data?.blog);
-                setImageBaseUrl(response?.data?.imageBaseUrl);
-            } catch (err) {
-                console.log(err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchBlog();
-    }, []);
 
     const handleAddTakeaway = () => {
         setBlog(prev => ({
@@ -115,13 +101,11 @@ export const EditBlog = () => {
         }
     };
 
-    console.log(blog);
-
 
 
     return (
         <>
-            {isLoading && <Loader />}
+            {isLoading && <PageLoader />}
 
             <div className="container py-4">
                 <form onSubmit={handleEdit}>
@@ -263,3 +247,5 @@ export const EditBlog = () => {
         </>
     )
 }
+
+export default EditBlog;

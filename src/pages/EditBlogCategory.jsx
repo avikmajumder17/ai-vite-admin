@@ -1,16 +1,41 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
+import { useLoaderData, useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import api from "../api/axios";
-import { Loader } from "../components/Loader";
+import { PageLoader } from "../components/PageLoader";
 
 
 
-export const EditBlogCategory = () => {
+export async function loader({ params }) {
+    if (!params.id) {
+        return {
+            blogCategoriesData: null
+        }
+    }
+
+    try {
+        const response = await api.get(`/blog_category/${params.id}`);
+
+        const blogCategories = response?.data?.data?.blogCategory;
+
+        return {
+            blogCategoriesData: blogCategories
+        }
+    } catch (err) {
+        console.log(err);
+
+        throw new Response("Failed to load blog categories", { status: 500 });
+    }
+};
+
+const EditBlogCategory = () => {
+    const { blogCategoriesData } = useLoaderData();
     const navigate = useNavigate();
 
     const [blgCategoryForm, setBlogCategoryForm] = useState({
-        category: ""
+        category: "",
+        ...blogCategoriesData
     });
     const [isLoading, setIsLoading] = useState(false);
 
@@ -22,26 +47,6 @@ export const EditBlogCategory = () => {
         });
     };
 
-    useEffect(() => {
-        if (!id) return;
-
-        const fetchBlogCategory = async () => {
-            try {
-                setIsLoading(true);
-
-                const response = await api.get(`/blog_category/${id}`);
-
-                setBlogCategoryForm(response?.data?.data?.blogCategory);
-            } catch (err) {
-                console.log(err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchBlogCategory();
-    }, [id]);
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -50,13 +55,19 @@ export const EditBlogCategory = () => {
 
             if (id) {
                 await api.patch(`/blog_category/${id}`, blgCategoryForm);
+
+                toast.success("Blog category successfully updated");
             } else {
                 await api.post("/blog_category", blgCategoryForm);  
+
+                toast.success("Blog category submission successful");
             }
 
             navigate(-1);
         } catch (err) {
             console.log(err);
+
+            toast.error(err?.message || "Something went wrong");
         } finally {
             setIsLoading(false);
         }
@@ -66,7 +77,7 @@ export const EditBlogCategory = () => {
 
     return (
         <>
-            {isLoading && <Loader />}
+            {isLoading && <PageLoader />}
 
             <div className="container py-4">
 
@@ -138,3 +149,5 @@ export const EditBlogCategory = () => {
         </>
     )
 }
+
+export default EditBlogCategory;

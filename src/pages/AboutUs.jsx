@@ -1,11 +1,33 @@
-import { useLayoutEffect, useState } from "react";
+import { useState } from "react";
+import { useLoaderData } from "react-router";
+import { toast } from "react-toastify";
 
 import api from "../api/axios";
-import { Loader } from "../components/Loader";
+import { PageLoader } from "../components/PageLoader";
 
 
 
-export const AboutUs = () => {
+export async function loader() {
+    try {
+        const response = await api.get("/aboutPage");
+
+        const aboutUs = response?.data?.data?.aboutPage;
+
+        return {
+            aboutUsData: aboutUs
+        }
+    } catch (err) {
+        console.log(err);
+
+        throw new Response("Failed to load about us", { status: 500 })
+    }
+}
+
+
+
+const AboutUs = () => {
+    const { aboutUsData } = useLoaderData();
+
     const [isLoading, setIsLoading] = useState(false);
     const [aboutUsForm, setAboutUsForm] = useState({
         heroSubHeading: "",
@@ -39,28 +61,9 @@ export const AboutUs = () => {
                 stat: "",
                 label: ""
             }
-        ]
+        ],
+        ...aboutUsData
     });
-
-    useLayoutEffect(() => {
-        const fetchAboutUsPage = async () => {
-            try {
-                setIsLoading(true);
-
-                const response = await api.get("/aboutPage");
-
-                setAboutUsForm(response?.data?.data?.aboutPage);
-
-                console.log(response?.data?.data?.aboutPage);
-            } catch (err) {
-                console.log(err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchAboutUsPage();
-    }, []);
 
     const handleChange = (e, arrayName = null, index) => {
         const { name, value } = e.target;
@@ -148,8 +151,12 @@ export const AboutUs = () => {
             setIsLoading(true);
 
             await api.patch("/aboutPage", aboutUsForm);
+
+            toast.success("About us page successfully updated");
         } catch (err) {
             console.log(err);
+
+            toast.error(err?.message || "Something went wrong");
         } finally {
             setIsLoading(false);
         }
@@ -159,7 +166,7 @@ export const AboutUs = () => {
 
     return (
         <>
-            {isLoading && <Loader />}
+            {isLoading && <PageLoader />}
 
             <div className="container py-4">
                 <form onSubmit={handleSubmit}>
@@ -517,3 +524,5 @@ export const AboutUs = () => {
         </>
     )
 }
+
+export default AboutUs;

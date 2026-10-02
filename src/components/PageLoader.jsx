@@ -1,8 +1,8 @@
-import "./Loader.css";
+import "./PageLoader.css";
 
 
 
-export const Loader = () => {
+export const PageLoader = () => {
     return (
         <div className="rfc-wrapper">
             <div className="diafmsdf">

@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import { formatDate } from "../hooks/useFormattedDate";
 
 import api from "../api/axios";
-import { Loader } from "../components/Loader";
+import { PageLoader } from "../components/PageLoader";
 
 
 
 export default function Blogs() {
     const [blogs, setBlogs] = useState([]);
     const [imageBaseUrl, setImageBaseUrl] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [blogDeleteAlert, setBlogDeleteAlert] = useState(null);
 
     useEffect(() => {
@@ -40,8 +41,12 @@ export default function Blogs() {
             await api.delete(`/blogs/${id}`);
 
             setBlogs((prev) => prev.filter((blog) => blog._id !== id))
+
+            toast.success("Blog deletion successful");
         } catch (err) {
             console.log(err);
+
+            toast.error(err?.message || "Blog deletion successful");
         } finally {
             setIsLoading(false);
         }
@@ -51,10 +56,10 @@ export default function Blogs() {
 
     return (
         <>
-            {isLoading && <Loader />}
+            {isLoading && <PageLoader />}
 
             <div className="container py-4">
-                <div className="d-flex justify-content-between align-items-center mb-4">
+                <div className="dfvgfndfsbdf d-flex justify-content-between align-items-center mb-4">
                     <h3 className="mb-0">All Blogs</h3>
 
                     <div className="d-flex align-items-center gap-3">

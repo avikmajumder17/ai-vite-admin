@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import api from "../api/axios";
-import { Loader } from "../components/Loader";
+import { PageLoader } from "../components/PageLoader";
 
 
 
-export const BlogCategories = () => {
+const BlogCategories = () => {
     const [blogCategories, setBlogCategories] = useState([]);
     const [blogCategoryDeleteAlert, setBlogCategoryDeleteAlert] = useState(null);
     const [isLoading, setIsLoading] = useState(false);    
@@ -20,8 +21,12 @@ export const BlogCategories = () => {
             setBlogCategories(prev => (
                 prev?.filter(ctgy => ctgy._id !== id)
             ));
+
+            toast.success("Blog category deletion successful");
         } catch (err) {
             console.log(err);
+
+            toast.error(err?.message || "Blog category deletion Failed");
         } finally {
             setIsLoading(false);
         }
@@ -49,7 +54,7 @@ export const BlogCategories = () => {
 
     return (
         <>
-            {isLoading && <Loader />}
+            {isLoading && <PageLoader />}
 
             <div className="container py-4">
                 <div className="d-flex justify-content-between align-items-center mb-4">
@@ -135,3 +140,5 @@ export const BlogCategories = () => {
         </>
     )
 }
+
+export default BlogCategories;

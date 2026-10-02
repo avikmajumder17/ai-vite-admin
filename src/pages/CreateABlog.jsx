@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import slugify from "slugify";
+import { toast } from "react-toastify";
 
 import api from "../api/axios";
-import { Loader } from "../components/Loader";
+import { PageLoader } from "../components/PageLoader";
 
 
 
@@ -100,8 +101,12 @@ export default function CreateABlog() {
             formData.append("image", blogData.image);
 
             await api.post("/blogs", formData);
+
+            toast.success("Blog submission successful");
         } catch (err) {
             console.log(err);
+
+            toast.error(err?.message || "Something went wrong");
         } finally {
             setIsLoading(false);
 
@@ -113,7 +118,7 @@ export default function CreateABlog() {
 
     return (
         <>
-            {isLoading && <Loader />}
+            {isLoading && <PageLoader />}
 
             <div className="container py-4">
                 <form onSubmit={submitBlogData}>

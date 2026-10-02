@@ -1,13 +1,48 @@
-import { useLayoutEffect, useState } from "react";
+import { useState } from "react";
+import { useLoaderData } from "react-router";
+import { toast } from "react-toastify";
 
 import api from "../api/axios";
 
 import DashboardCard from "../components/DashboardCard";
-import { Loader } from "../components/Loader";
+import { PageLoader } from "../components/PageLoader";
+
+
+
+export async function loader() {
+  try {
+    const response = await api.get("/homepage");
+
+    const homePage = response.data.data.homePage;    
+
+    if (!homePage?.pricingPlans?.length) {
+      homePage.pricingPlans = [
+        {
+          planName: "",
+          planPurpose: "",
+          price: "",
+          duration: "",
+          planDetails: [""],
+          ctaButton: ""
+        }
+      ]
+    }
+
+    return {
+      homePageData: homePage
+    }
+  } catch (err) {
+    console.log(err);
+    
+    throw new Response("Failed to load homepage", { status: 500 });
+  }
+}
 
 
 
 export default function Homepage() {
+  const { homePageData } = useLoaderData();
+
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     heroSubHeading: "",
@@ -83,41 +118,10 @@ export default function Homepage() {
         planDetails: [""],
         ctaButton: ""
       }
-    ]
-  });  
+    ],
+    ...homePageData
+  });
 
-  useLayoutEffect(() => {
-    const fetchHomePage = async () => {
-      try {
-        setIsLoading(true);
-
-        const response = await api.get("/homepage");
-
-        const homePage = response.data.data.homePage;
-
-        if (!homePage?.pricingPlans?.length) {
-          homePage.pricingPlans = [
-            {
-              planName: "",
-              planPurpose: "",
-              price: "",
-              duration: "",
-              planDetails: [""],
-              ctaButton: ""
-            }
-          ]
-        }
-
-        setFormData(homePage);
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchHomePage();
-  }, []);
 
 
   const handleChange = (e, arrayName = null, index = null, nestedArray = null, nestedIndex = null) => {
@@ -214,8 +218,12 @@ export default function Homepage() {
       setIsLoading(true);
 
       await api.patch("/homepage", formData);
+
+      toast.success("Homepage successfully updated");
     } catch (err) {
       console.log(err);
+
+      toast.error(err?.message || "Something went wrong");
     } finally {
       setIsLoading(false);
     }
@@ -225,7 +233,7 @@ export default function Homepage() {
 
   return (
     <>
-      {isLoading && <Loader />}
+      {isLoading && <PageLoader />}
 
       <div className="page">
         <div className="cards">
@@ -538,8 +546,8 @@ export default function Homepage() {
                         </div>
 
                         {pricingPlan?.planDetails?.map((planDetail, planDetailIndex) => (
-                          <div className="diuewkhrwe d-flex align-items-center justify-content-between gap-4">
-                            <input key={planDetailIndex} value={planDetail} onChange={(e) => handleChange(e, "pricingPlans", index, "planDetails", planDetailIndex)} type="text" className="form-control mb-3" placeholder="CTA Button" />
+                          <div key={planDetailIndex} className="diuewkhrwe d-flex align-items-center justify-content-between gap-4">
+                            <input value={planDetail} onChange={(e) => handleChange(e, "pricingPlans", index, "planDetails", planDetailIndex)} type="text" className="form-control mb-3" placeholder="CTA Button" />
 
                             {pricingPlan?.planDetails?.length > 1 && (
                               <i onClick={() => handleRemovePlanDetail(pricingPlan._id, planDetailIndex)} className="fa-regular fs-2 fa-circle-xmark text-danger"></i>
