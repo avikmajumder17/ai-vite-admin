@@ -9,6 +9,7 @@ import { PageLoader } from "../components/PageLoader";
 
 
 
+// eslint-disable-next-line
 export async function loader() {
   try {
     const response = await api.get("/homepage");
