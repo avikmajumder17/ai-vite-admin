@@ -14,12 +14,10 @@ export async function loader({ params }) {
 
         const blog = response?.data?.data?.blog;
         const blogCategories = responseCategory?.data?.data?.blogCategory;
-        const imageBaseUrl = response?.data?.imageBaseUrl;
 
         return {
             blogData: blog,
-            blogCategories,
-            imageBaseUrl
+            blogCategories
         }
     } catch (err) {
         console.log(err);
@@ -30,7 +28,7 @@ export async function loader({ params }) {
 
 
 const EditBlog = () => {
-    const { blogData, blogCategories, imageBaseUrl } = useLoaderData();
+    const { blogData, blogCategories } = useLoaderData();
 
     const [isLoading, setIsLoading] = useState(false);
     const [blog, setBlog] = useState({        
@@ -165,7 +163,7 @@ const EditBlog = () => {
                         />
 
                         <img
-                            src={`${imageBaseUrl}/${blog?.image}`}
+                            src={blog?.image}
                             alt=""
                             width="150"
                             className="rounded mt-3"

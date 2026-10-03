@@ -11,7 +11,7 @@ import { PageLoader } from "../components/PageLoader";
 
 export default function Blogs() {
     const [blogs, setBlogs] = useState([]);
-    const [imageBaseUrl, setImageBaseUrl] = useState("");
+    // const [imageBaseUrl, setImageBaseUrl] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [blogDeleteAlert, setBlogDeleteAlert] = useState(null);
 
@@ -23,7 +23,7 @@ export default function Blogs() {
                 const response = await api.get("/blogs");
 
                 setBlogs(response?.data?.data?.blogs);
-                setImageBaseUrl(response?.data?.imageBaseUrl);
+                // setImageBaseUrl(response?.data?.imageBaseUrl);
             } catch (err) {
                 console.log(err);
             } finally {
@@ -33,6 +33,10 @@ export default function Blogs() {
 
         fetchBlogs();
     }, []);
+    
+
+
+    console.log(blogs);
 
     const deleteBlogHandler = async (id) => {
         try {
@@ -99,7 +103,7 @@ export default function Blogs() {
 
                                             <td>
                                                 <img
-                                                    src={`${imageBaseUrl}/${blog?.image}`}
+                                                    src={blog?.image}
                                                     alt={blog?.blogTitle}
                                                     width="80"
                                                     height="50"

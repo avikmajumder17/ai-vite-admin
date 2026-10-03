@@ -1,0 +1,2 @@
+import { a as future, c as publicPath, f as ssr, i as entry, l as routeDiscovery, n as assetsBuildDirectory, o as isSpaMode, p as server_manifest_default, r as basename, s as prerender, t as allowedActionOrigins, u as routes } from "./assets/server-build-vhfmjnp5.js";
+export { allowedActionOrigins, server_manifest_default as assets, assetsBuildDirectory, basename, entry, future, isSpaMode, prerender, publicPath, routeDiscovery, routes, ssr };
