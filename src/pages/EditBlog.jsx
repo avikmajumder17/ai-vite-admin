@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLoaderData, useNavigate, useParams } from "react-router-dom";
 
 import api from "../api/axios";
@@ -6,6 +6,7 @@ import { PageLoader } from "../components/PageLoader";
 
 
 
+//eslint-disable-next-line
 export async function loader({ params }) {
     try {
         const response = await api.get(`/blogs/${params.id}`);
